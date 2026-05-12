@@ -150,6 +150,20 @@
       border-bottom-left-radius: 4px;
     }
 
+    .chat-message a {
+      color: #7dd3fc;
+      text-decoration: underline;
+      word-break: break-all;
+    }
+
+    .chat-message a:hover {
+      color: #bae6fd;
+    }
+
+    .chat-message.user a {
+      color: #f0f9ff;
+    }
+
     .chat-footer {
       padding: 10px 10px 12px;
       border-top: 1px solid rgba(30, 64, 175, 0.6);
@@ -255,7 +269,7 @@
   </div>
 
   <script>
-    const API_BASE = "http://localhost:8000";
+    const API_BASE = "http://139.100.204.132:8000";
 
     function getSessionId() {
       try {
@@ -279,10 +293,77 @@
 
     let isSending = false;
 
+    /** Вставляет текст с кликабельными http(s) и www ссылками (без innerHTML для произвольного HTML). */
+    function appendLinkedPlainText(el, text) {
+      const re = /\b(https?:\/\/[^\s<]+|www\.[^\s<]+)/gi;
+      let lastIndex = 0;
+      let match;
+      while ((match = re.exec(text)) !== null) {
+        let full = match[0];
+        let urlCore = full.replace(/[.,;:!?)\]\}]+$/g, "");
+        if (match.index > lastIndex) {
+          el.appendChild(document.createTextNode(text.slice(lastIndex, match.index)));
+        }
+        let href = urlCore;
+        if (/^www\./i.test(urlCore)) href = "https://" + urlCore;
+        try {
+          const u = new URL(href);
+          if (u.protocol === "http:" || u.protocol === "https:") {
+            const a = document.createElement("a");
+            a.href = u.href;
+            a.target = "_blank";
+            a.rel = "noopener noreferrer";
+            a.textContent = urlCore;
+            el.appendChild(a);
+            const tail = full.slice(urlCore.length);
+            if (tail) el.appendChild(document.createTextNode(tail));
+            lastIndex = match.index + full.length;
+            continue;
+          }
+        } catch (_) {
+          /* не URL */
+        }
+        el.appendChild(document.createTextNode(full));
+        lastIndex = match.index + full.length;
+      }
+      if (lastIndex < text.length) {
+        el.appendChild(document.createTextNode(text.slice(lastIndex)));
+      }
+    }
+
+    /** Текст + markdown [подпись](https://...) + голые URL. */
+    function appendMixedContent(el, text) {
+      const md = /\[([^\]]*)\]\((https?:\/\/[^)\s]+)\)/g;
+      let last = 0;
+      let m;
+      while ((m = md.exec(text)) !== null) {
+        appendLinkedPlainText(el, text.slice(last, m.index));
+        const label = m[1];
+        let urlRaw = m[2].replace(/[.,;:!?)]+$/g, "");
+        try {
+          const u = new URL(urlRaw);
+          if (u.protocol === "http:" || u.protocol === "https:") {
+            const a = document.createElement("a");
+            a.href = u.href;
+            a.target = "_blank";
+            a.rel = "noopener noreferrer";
+            a.textContent = label.trim() ? label : urlRaw;
+            el.appendChild(a);
+          } else {
+            appendLinkedPlainText(el, m[0]);
+          }
+        } catch (_) {
+          appendLinkedPlainText(el, m[0]);
+        }
+        last = m.index + m[0].length;
+      }
+      appendLinkedPlainText(el, text.slice(last));
+    }
+
     function appendMessage(text, from) {
       const div = document.createElement("div");
       div.className = "chat-message " + from;
-      div.textContent = text;
+      appendMixedContent(div, text);
       messagesEl.appendChild(div);
       messagesEl.scrollTop = messagesEl.scrollHeight;
     }
