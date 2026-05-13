@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>ИИ-ассистент — техподдержка и FAQ</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg-deep: #0f172a;
+      --text: #e5e7eb;
+      --muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg-deep);
+      color: var(--text);
+      padding: 0 16px 120px;
+      background-image:
+        radial-gradient(ellipse 100% 70% at 50% -15%, rgba(79, 70, 229, 0.28), transparent),
+        radial-gradient(ellipse 70% 50% at 100% 30%, rgba(6, 182, 212, 0.1), transparent),
+        radial-gradient(ellipse 50% 45% at 0% 100%, rgba(129, 140, 248, 0.12), transparent);
+    }
+
+    .nav-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin: 16px 0 8px;
+      font-size: 0.9rem;
+      color: #a5b4fc;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.15s ease;
+    }
+
+    .nav-back:hover {
+      color: #e0e7ff;
+    }
+
+    .site-main {
+      max-width: 640px;
+      margin: 0 auto;
+      padding-top: 8px;
+    }
+
+    .site-main h1 {
+      margin: 0 0 12px;
+      font-size: clamp(1.35rem, 3.5vw, 1.75rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.25;
+      background: linear-gradient(115deg, #f8fafc, #c7d2fe 40%, #7dd3fc);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .site-main .lead {
+      margin: 0 0 18px;
+      font-size: 1rem;
+      line-height: 1.5;
+      color: #cbd5e1;
+    }
+
+    .bubble-hint {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: rgba(15, 23, 42, 0.75);
+      border: 1px solid rgba(129, 140, 248, 0.35);
+      box-shadow: 0 8px 32px rgba(2, 6, 23, 0.4);
+    }
+
+    .bubble-hint-icon {
+      flex-shrink: 0;
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      background: linear-gradient(135deg, #4f46e5, #06b6d4);
+      box-shadow: 0 0 0 2px rgba(125, 211, 252, 0.35);
+      animation: hint-icon-glow 2.2s ease-in-out infinite;
+    }
+
+    .bubble-hint p {
+      margin: 0;
+      font-size: 0.92rem;
+      line-height: 1.45;
+      color: var(--muted);
+    }
+
+    .bubble-hint strong {
+      color: #e2e8f0;
+      font-weight: 600;
+    }
+
+    @keyframes hint-icon-glow {
+      0%, 100% { box-shadow: 0 0 0 2px rgba(125, 211, 252, 0.35); }
+      50% { box-shadow: 0 0 0 4px rgba(6, 182, 212, 0.45), 0 0 24px rgba(79, 70, 229, 0.35); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .bubble-hint-icon,
+      .chat-launcher {
+        animation: none !important;
+      }
+    }
+
+    .chat-launcher {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 64px;
+      height: 64px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #4f46e5, #06b6d4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 40px rgba(15, 23, 42, 0.7);
+      cursor: pointer;
+      border: none;
+      outline: none;
+      transition: transform 0.12s ease, box-shadow 0.12s ease;
+      z-index: 1000;
+      animation: launcher-pulse 2.4s ease-in-out infinite;
+    }
+
+    @keyframes launcher-pulse {
+      0%, 100% {
+        box-shadow: 0 10px 40px rgba(15, 23, 42, 0.7), 0 0 0 0 rgba(6, 182, 212, 0.45);
+      }
+      50% {
+        box-shadow: 0 10px 48px rgba(79, 70, 229, 0.55), 0 0 0 12px rgba(6, 182, 212, 0);
+      }
+    }
+
+    .chat-launcher:hover {
+      transform: translateY(-3px) scale(1.04);
+      box-shadow: 0 16px 50px rgba(15, 23, 42, 0.85), 0 0 0 4px rgba(125, 211, 252, 0.35);
+      animation: none;
+    }
+
+    .chat-launcher span {
+      font-size: 30px;
+    }
+
+    .launcher-hint-chip {
+      position: fixed;
+      bottom: 96px;
+      right: 24px;
+      z-index: 999;
+      max-width: min(200px, calc(100vw - 48px));
+      padding: 8px 12px;
+      border-radius: 12px;
+      font-size: 0.78rem;
+      line-height: 1.35;
+      color: #e2e8f0;
+      background: rgba(2, 6, 23, 0.92);
+      border: 1px solid rgba(125, 211, 252, 0.35);
+      box-shadow: 0 8px 28px rgba(2, 6, 23, 0.65);
+      pointer-events: none;
+      animation: chip-nudge 2.8s ease-in-out infinite;
+    }
+
+    .launcher-hint-chip::after {
+      content: "";
+      position: absolute;
+      right: 22px;
+      bottom: -7px;
+      width: 0;
+      height: 0;
+      border-left: 7px solid transparent;
+      border-right: 7px solid transparent;
+      border-top: 7px solid rgba(2, 6, 23, 0.92);
+    }
+
+    @keyframes chip-nudge {
+      0%, 100% { transform: translateY(0); opacity: 1; }
+      50% { transform: translateY(-4px); opacity: 0.92; }
+    }
+
+    .chat-widget {
+      position: fixed;
+      bottom: 100px;
+      right: 24px;
+      width: 360px;
+      max-width: calc(100vw - 32px);
+      height: 480px;
+      max-height: calc(100vh - 120px);
+      background: #020617;
+      border-radius: 24px;
+      box-shadow: 0 20px 60px rgba(15, 23, 42, 0.85);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      backdrop-filter: blur(20px);
+    }
+
+    .chat-header {
+      padding: 14px 16px;
+      background: radial-gradient(circle at top left, #4f46e5, #020617);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #e5e7eb;
+    }
+
+    .chat-header-left {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 30%, #ffffff, #4f46e5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      color: #020617;
+      box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.6);
+    }
+
+    .chat-title {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .chat-subtitle {
+      font-size: 11px;
+      color: #cbd5f5;
+      opacity: 0.8;
+    }
+
+    .chat-close {
+      border: none;
+      background: transparent;
+      color: #e5e7eb;
+      font-size: 18px;
+      cursor: pointer;
+      opacity: 0.8;
+    }
+
+    .chat-close:hover {
+      opacity: 1;
+    }
+
+    .chat-messages {
+      flex: 1;
+      padding: 14px 14px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      overflow-y: auto;
+      background: radial-gradient(circle at top, rgba(56, 189, 248, 0.05), transparent),
+                  radial-gradient(circle at bottom, rgba(129, 140, 248, 0.08), #020617);
+    }
+
+    .chat-message {
+      max-width: 80%;
+      border-radius: 14px;
+      padding: 8px 11px;
+      font-size: 13px;
+      line-height: 1.35;
+      word-wrap: break-word;
+      white-space: pre-wrap;
+    }
+
+    .chat-message.user {
+      margin-left: auto;
+      background: linear-gradient(135deg, #4f46e5, #06b6d4);
+      color: #e5e7eb;
+      border-bottom-right-radius: 4px;
+    }
+
+    .chat-message.bot {
+      margin-right: auto;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      color: #e5e7eb;
+      border-bottom-left-radius: 4px;
+    }
+
+    .chat-message a {
+      color: #7dd3fc;
+      text-decoration: underline;
+      word-break: break-all;
+    }
+
+    .chat-message a:hover {
+      color: #bae6fd;
+    }
+
+    .chat-message.user a {
+      color: #f0f9ff;
+    }
+
+    .chat-footer {
+      padding: 10px 10px 12px;
+      border-top: 1px solid rgba(30, 64, 175, 0.6);
+      background: linear-gradient(to top, #020617, #020617f5);
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .chat-input {
+      flex: 1;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      padding: 7px 12px;
+      background: rgba(15, 23, 42, 0.9);
+      color: #e5e7eb;
+      font-size: 13px;
+      outline: none;
+    }
+
+    .chat-input::placeholder {
+      color: #6b7280;
+    }
+
+    .chat-send {
+      border-radius: 999px;
+      border: none;
+      padding: 7px 12px;
+      background: linear-gradient(135deg, #4f46e5, #06b6d4);
+      color: #e5e7eb;
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      box-shadow: 0 6px 20px rgba(15, 23, 42, 0.8);
+    }
+
+    .chat-send:disabled {
+      opacity: 0.6;
+      cursor: default;
+      box-shadow: none;
+    }
+
+    .chat-send span {
+      font-size: 14px;
+    }
+
+    .typing-indicator {
+      display: inline-flex;
+      gap: 2px;
+    }
+
+    .dot {
+      width: 4px;
+      height: 4px;
+      border-radius: 999px;
+      background: #9ca3af;
+      animation: blink 1s infinite ease-in-out;
+    }
+
+    .dot:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .dot:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes blink {
+      0%, 80%, 100% { opacity: 0.2; transform: translateY(0); }
+      40% { opacity: 1; transform: translateY(-1px); }
+    }
+  </style>
+</head>
+<body>
+  <a class="nav-back" href="index.html">← На главную</a>
+
+  <main class="site-main">
+    <h1>ИИ-ассистент для техподдержки и FAQ Mail.Ru</h1>
+    <p class="lead">
+      Ответы строятся по базе знаниий и истории диалога.
+    </p>
+    <div class="bubble-hint" aria-hidden="true">
+      <div class="bubble-hint-icon">💬</div>
+      <p>
+        <strong>Внимание:</strong> чат открывается с помощью <strong>круглой кнопки</strong> в правом нижнем углу экрана.
+        Нажмите на неё, чтобы задать вопрос.
+      </p>
+    </div>
+  </main>
+
+  <div class="launcher-hint-chip" id="launcher-hint-chip" hidden>
+    Нажмите, чтобы открыть чат
+  </div>
+
+  <button class="chat-launcher" id="chat-launcher" aria-label="Открыть FAQ-ассистента">
+    <span>💬</span>
+  </button>
+
+  <div class="chat-widget" id="chat-widget" style="display:none;">
+    <div class="chat-header">
+      <div class="chat-header-left">
+        <div class="avatar">AI</div>
+        <div>
+          <div class="chat-title">FAQ ассистент</div>
+          <div class="chat-subtitle">Задайте вопрос о почте Mail.Ru</div>
+        </div>
+      </div>
+      <button class="chat-close" id="chat-close" aria-label="Закрыть чат">×</button>
+    </div>
+    <div class="chat-messages" id="chat-messages"></div>
+    <div class="chat-footer">
+      <input
+        id="chat-input"
+        class="chat-input"
+        placeholder="Напишите вопрос..."
+      />
+      <button id="chat-send" class="chat-send">
+        <span>➤</span>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = "http://139.100.204.132:8000";
+
+    function getSessionId() {
+      try {
+        let id = sessionStorage.getItem("faq_session_id");
+        if (!id) {
+          id = crypto.randomUUID();
+          sessionStorage.setItem("faq_session_id", id);
+        }
+        return id;
+      } catch {
+        return "default";
+      }
+    }
+
+    const launcher = document.getElementById("chat-launcher");
+    const widget = document.getElementById("chat-widget");
+    const closeBtn = document.getElementById("chat-close");
+    const messagesEl = document.getElementById("chat-messages");
+    const inputEl = document.getElementById("chat-input");
+    const sendBtn = document.getElementById("chat-send");
+    const hintChip = document.getElementById("launcher-hint-chip");
+
+    let isSending = false;
+
+    function appendLinkedPlainText(el, text) {
+      const re = /\b(https?:\/\/[^\s<]+|www\.[^\s<]+)/gi;
+      let lastIndex = 0;
+      let match;
+      while ((match = re.exec(text)) !== null) {
+        let full = match[0];
+        let urlCore = full.replace(/[.,;:!?)\]\}]+$/g, "");
+        if (match.index > lastIndex) {
+          el.appendChild(document.createTextNode(text.slice(lastIndex, match.index)));
+        }
+        let href = urlCore;
+        if (/^www\./i.test(urlCore)) href = "https://" + urlCore;
+        try {
+          const u = new URL(href);
+          if (u.protocol === "http:" || u.protocol === "https:") {
+            const a = document.createElement("a");
+            a.href = u.href;
+            a.target = "_blank";
+            a.rel = "noopener noreferrer";
+            a.textContent = urlCore;
+            el.appendChild(a);
+            const tail = full.slice(urlCore.length);
+            if (tail) el.appendChild(document.createTextNode(tail));
+            lastIndex = match.index + full.length;
+            continue;
+          }
+        } catch (_) {}
+        el.appendChild(document.createTextNode(full));
+        lastIndex = match.index + full.length;
+      }
+      if (lastIndex < text.length) {
+        el.appendChild(document.createTextNode(text.slice(lastIndex)));
+      }
+    }
+
+    function appendMixedContent(el, text) {
+      const md = /\[([^\]]*)\]\((https?:\/\/[^)\s]+)\)/g;
+      let last = 0;
+      let m;
+      while ((m = md.exec(text)) !== null) {
+        appendLinkedPlainText(el, text.slice(last, m.index));
+        const label = m[1];
+        let urlRaw = m[2].replace(/[.,;:!?)]+$/g, "");
+        try {
+          const u = new URL(urlRaw);
+          if (u.protocol === "http:" || u.protocol === "https:") {
+            const a = document.createElement("a");
+            a.href = u.href;
+            a.target = "_blank";
+            a.rel = "noopener noreferrer";
+            a.textContent = label.trim() ? label : urlRaw;
+            el.appendChild(a);
+          } else {
+            appendLinkedPlainText(el, m[0]);
+          }
+        } catch (_) {
+          appendLinkedPlainText(el, m[0]);
+        }
+        last = m.index + m[0].length;
+      }
+      appendLinkedPlainText(el, text.slice(last));
+    }
+
+    function appendMessage(text, from) {
+      const div = document.createElement("div");
+      div.className = "chat-message " + from;
+      appendMixedContent(div, text);
+      messagesEl.appendChild(div);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    function appendTyping() {
+      const div = document.createElement("div");
+      div.className = "chat-message bot";
+      div.id = "typing-indicator";
+      div.innerHTML = '<div class="typing-indicator"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
+      messagesEl.appendChild(div);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    function removeTyping() {
+      const el = document.getElementById("typing-indicator");
+      if (el) el.remove();
+    }
+
+    async function sendMessage() {
+      if (isSending) return;
+      const text = inputEl.value.trim();
+      if (!text) return;
+
+      appendMessage(text, "user");
+      inputEl.value = "";
+
+      isSending = true;
+      sendBtn.disabled = true;
+      appendTyping();
+
+      try {
+        const res = await fetch(API_BASE + "/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: text, top_k: 3, session_id: getSessionId() })
+        });
+
+        if (!res.ok) {
+          throw new Error("Server error");
+        }
+
+        const data = await res.json();
+        removeTyping();
+        appendMessage(data.answer, "bot");
+      } catch (err) {
+        console.error(err);
+        removeTyping();
+        appendMessage("Не удалось получить ответ. Попробуйте позже.", "bot");
+      } finally {
+        isSending = false;
+        sendBtn.disabled = false;
+      }
+    }
+
+    function setHintChipVisible(visible) {
+      if (!hintChip) return;
+      hintChip.hidden = !visible;
+      hintChip.setAttribute("aria-hidden", visible ? "false" : "true");
+    }
+
+    launcher.addEventListener("click", () => {
+      widget.style.display = "flex";
+      launcher.style.display = "none";
+      setHintChipVisible(false);
+      if (!messagesEl.hasChildNodes()) {
+        appendMessage("Здравствуйте! Я FAQ-ассистент Mail.Ru. Задайте Ваш вопрос о работе с нашей почтой", "bot");
+      }
+      setTimeout(() => inputEl.focus(), 50);
+    });
+
+    closeBtn.addEventListener("click", () => {
+      widget.style.display = "none";
+      launcher.style.display = "flex";
+      setHintChipVisible(true);
+    });
+
+    sendBtn.addEventListener("click", sendMessage);
+
+    inputEl.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+
+    setHintChipVisible(true);
+  </script>
+</body>
+</html>
