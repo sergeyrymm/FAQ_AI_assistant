@@ -1,4 +1,4 @@
-## FAQ-ассистент с RAG (FAISS) и OpenAI через ProxyAPI
+## FAQ-ассистент с RAG (FAISS) и OpenAI через ProxyAPI + ProxyAPI
 
 Пример проекта FAQ-ассистента для сайта: данные FAQ → RAG через FAISS → backend на FastAPI → виджет чата на фронтенде.
 
@@ -11,14 +11,16 @@
 ### Структура проекта
 
 - `backend/`
-  - `app.py` — FastAPI-сервер, эндпоинт `/chat`, интеграция с OpenAI и поиск по FAISS.
+  - `app.py` — FastAPI-сервер, эндпоинт `/chat`, интеграция с OpenAI через ProxyAPI и поиск по FAISS.
   - `build_index.py` — скрипт построения RAG-индекса из FAQ-данных.
   - `rag_index.py` — функции загрузки индекса и поиска похожих ответов.
 - `data/`
-  - `faqs.json` — пример данных FAQ (вопрос–ответ).
+  - `faqs.json` — (опционально) пример данных FAQ (вопрос–ответ).
+  - `KnowledgeDB.md` — база знаний в markdown формате.
   - `faiss_index.bin`, `faqs_metadata.npy` — будут созданы скриптом `build_index.py`.
 - `frontend/`
-  - `index.html` — простая страница с виджетом чата.
+  - `index.html` — пример простой главной страницы.
+  - `assist.html` — страница с описанием проекта и виджетом чата.
 - `requirements.txt` — зависимости Python.
 
 ### Подготовка окружения
@@ -47,7 +49,7 @@ python -m backend.build_index
 ```
 
 Скрипт:
-- посчитает эмбеддинги для текстов `вопрос + ответ` через OpenAI (`text-embedding-3-small`);
+- посчитает эмбеддинги для текстов `вопрос + ответ` через ProxyAPI(OpenAI) (`text-embedding-3-small`);
 - создаст FAISS-индекс `faiss_index.bin`;
 - сохранит метаданные вопросов/ответов в `faqs_metadata.npy`.
 
@@ -63,17 +65,6 @@ uvicorn backend.app:app --reload --host 0.0.0.0 --port 8000
   - выход: `{ "answer": "...", "context": [ { "question": "...", "answer": "..." }, ... ] }`.
 - `GET /health` — проверка статуса.
 
-### 3. Frontend-виджет чата
-
-Файл `frontend/index.html` содержит:
-- плавающую кнопку-виджет (`chat-launcher`) в правом нижнем углу;
-- всплывающее окно чата с историей сообщений, индикатором печати и отправкой запросов на `http://localhost:8000/chat`.
-
-Чтобы протестировать локально:
-
-1. Убедитесь, что backend запущен на `http://localhost:8000`.
-2. Откройте файл `frontend/index.html` в браузере (двойной клик или через локальный web-server).
-3. Нажмите на круглую кнопку с иконкой 💬 и задайте вопрос.
 
 ### Как это работает (коротко)
 
