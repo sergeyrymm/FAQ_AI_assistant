@@ -1,4 +1,4 @@
-## FAQ-ассистент с RAG (FAISS) и OpenAI через ProxyAPI + ProxyAPI
+## FAQ-ассистент с RAG (FAISS) и OpenAI через ProxyAPI
 
 Пример проекта FAQ-ассистента для сайта: данные FAQ → RAG через FAISS → backend на FastAPI → виджет чата на фронтенде.
 
