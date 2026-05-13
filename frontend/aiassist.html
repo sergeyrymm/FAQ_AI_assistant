@@ -21,7 +21,7 @@
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background: var(--bg-deep);
       color: var(--text);
-      padding: 0 16px 120px;
+      padding: 0 16px 160px;
       background-image:
         radial-gradient(ellipse 100% 70% at 50% -15%, rgba(79, 70, 229, 0.28), transparent),
         radial-gradient(ellipse 70% 50% at 100% 30%, rgba(6, 182, 212, 0.1), transparent),
@@ -104,6 +104,77 @@
     .bubble-hint strong {
       color: #e2e8f0;
       font-weight: 600;
+    }
+
+    .info-panel {
+      margin-top: 28px;
+      padding: 20px 18px 22px;
+      border-radius: 16px;
+      background: rgba(15, 23, 42, 0.55);
+      border: 1px solid rgba(148, 163, 184, 0.22);
+    }
+
+    .info-panel h2 {
+      margin: 0 0 10px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #c7d2fe;
+      letter-spacing: 0.02em;
+    }
+
+    .info-panel h2:not(:first-child) {
+      margin-top: 22px;
+    }
+
+    .info-panel p {
+      margin: 0;
+      font-size: 0.95rem;
+      line-height: 1.55;
+      color: #cbd5e1;
+    }
+
+    .info-panel ul {
+      margin: 8px 0 0;
+      padding-left: 1.2em;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      color: #cbd5e1;
+    }
+
+    .info-panel li {
+      margin-bottom: 8px;
+    }
+
+    .info-panel li:last-child {
+      margin-bottom: 0;
+    }
+
+    .page-footer {
+      max-width: 640px;
+      margin: 28px auto 0;
+      padding: 18px 16px 24px;
+      text-align: center;
+      border-top: 1px solid rgba(148, 163, 184, 0.2);
+    }
+
+    .page-footer a {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.92rem;
+      font-weight: 500;
+      color: #7dd3fc;
+      text-decoration: none;
+      word-break: break-all;
+    }
+
+    .page-footer a:hover {
+      color: #bae6fd;
+      text-decoration: underline;
+    }
+
+    .page-footer a span {
+      flex-shrink: 0;
     }
 
     @keyframes hint-icon-glow {
@@ -402,7 +473,28 @@
         Нажмите на неё, чтобы задать вопрос.
       </p>
     </div>
+
+    <section class="info-panel" aria-labelledby="goal-heading">
+      <h2 id="goal-heading">Цель проекта:</h2>
+      <p>
+        Создать кастомного нейроассистента, способного вести поддержку клиентов в текстовом формате и значительно сократить нагрузку на сотрудников техподдержки.
+      </p>
+      <h2 id="biz-heading">Какие бизнес-задачи закрывает:</h2>
+      <ul aria-labelledby="biz-heading">
+        <li>Снижение нагрузки на первую линию поддержки.</li>
+        <li>Автоматизация обработки типовых обращений.</li>
+        <li>Повышение скорости и качества взаимодействия с клиентами.</li>
+        <li>Доступность поддержки 24/7 без привлечения людей.</li>
+      </ul>
+    </section>
   </main>
+
+  <footer class="page-footer">
+    <a href="https://github.com/sergeyrymm/FAQ_AI_assistant" target="_blank" rel="noopener noreferrer">
+      <span aria-hidden="true">↗</span>
+      <span>https://github.com/sergeyrymm/FAQ_AI_assistant</span>
+    </a>
+  </footer>
 
   <div class="launcher-hint-chip" id="launcher-hint-chip" hidden>
     Нажмите, чтобы открыть чат
